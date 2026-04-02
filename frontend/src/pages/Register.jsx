@@ -56,7 +56,7 @@ const Register = () => {
       <div className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8">
         <div>
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center">
               <FiCheckCircle className="text-white text-2xl" />
             </div>
           </div>
@@ -65,7 +65,7 @@ const Register = () => {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Ou{' '}
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/login" className="font-medium text-blue-900 hover:text-indigo-500">
               connectez-vous à votre compte
             </Link>
           </p>
@@ -106,7 +106,7 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="input-field pl-10"
-                  placeholder="votre@email.com"
+                  placeholder="example@gmail.com"
                 />
               </div>
             </div>
@@ -168,7 +168,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="w-5 h-5 border-t-2 border-white rounded-full animate-spin"></div>
@@ -186,4 +186,5 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Register;   
+
