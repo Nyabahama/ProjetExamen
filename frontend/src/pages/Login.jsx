@@ -25,11 +25,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-      const { token, user } = response.data;
+      // const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      // const { token, user } = response.data;
       
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // localStorage.setItem('token', token);
+      // localStorage.setItem('user', JSON.stringify(user));
       
       toast.success('Connexion réussie !');
       navigate('/dashboard');

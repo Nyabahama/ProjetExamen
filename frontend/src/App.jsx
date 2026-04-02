@@ -24,12 +24,12 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <PrivateRoute>
+            // <PrivateRoute>
               <>
                 <Navbar />
                 <Dashboard />
               </>
-            </PrivateRoute>
+            // </PrivateRoute>
           }
         />
       </Routes>
