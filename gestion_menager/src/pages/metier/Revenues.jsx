@@ -10,7 +10,7 @@ const Revenues = () => {
         const fetchRevenues = async () => {
             try {
                 const res = await axios.get(`http://localhost:5000/api/revenus/menage/${user.id_menage}`);
-                setRevenues(res.data[0]); // résultat proc call : results[0] tableau de revenus
+                setRevenues(res.data[0]); 
             } catch (err) {
                 console.error("Erreur lors de la récupération des revenus", err);
             }

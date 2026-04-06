@@ -1,0 +1,5 @@
+@startuml
+actor Utilisateur
+usecase "S'enregistrer"
+Utilisateur --> "S'enregistrer"
+@enduml
