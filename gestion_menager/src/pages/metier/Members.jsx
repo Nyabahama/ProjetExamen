@@ -9,7 +9,8 @@ const Members = () => {
     useEffect(() => {
         const fetchMembers = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/members/filter`, {
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+                const res = await axios.get(`${apiUrl}/api/members/filter`, {
                     params: { id_menage: user.id_menage, id_famille: user.id_famille }
                 });
                 setMembers(res.data[0]); // résultat proc call : results[0] tableau de membres
