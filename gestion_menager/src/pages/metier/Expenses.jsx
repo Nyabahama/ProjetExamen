@@ -9,7 +9,8 @@ const Expenses = () => {
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/depenses/detailed`, {
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+                const res = await axios.get(`${apiUrl}/api/depenses/detailed`, {
                     params: { id_menage: user.id_menage, id_famille: user.id_famille, id_personne: user.id_personne }
                 });
                 setExpenses(res.data[0]); // résultat proc call : results[0] tableau de dépenses

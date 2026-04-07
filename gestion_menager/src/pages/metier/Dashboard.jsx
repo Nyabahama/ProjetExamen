@@ -9,7 +9,8 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/dashboard/dynamic`, {
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+                const res = await axios.get(`${apiUrl}/api/dashboard/dynamic`, {
                     params: { id_menage: user.id_menage, id_famille: user.id_famille, id_personne: user.id_personne }
                 });
                 setStats(res.data[0][0]);

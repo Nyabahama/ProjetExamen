@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,18 +8,20 @@ const Avoir = () => {
     const [selectedAvoir, setSelectedAvoir] = useState(null);
     const [form, setForm] = useState({ nom: '', type: '', description: '', valeur: 0, date: '' });
 
-    const fetchAvoirs = async () => {
+    const fetchAvoirs = useCallback(async () => {
         if (!user) return;
-        const res = await axios.get(`http://localhost:5000/api/avoirs/menage/${user.id_menage}`);
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        const res = await axios.get(`${apiUrl}/api/avoirs/menage/${user.id_menage}`);
         setAvoirs(res.data[0] || []);
-    };
+    }, [user]);
 
-    useEffect(() => { fetchAvoirs(); }, [user]);
+    useEffect(() => { fetchAvoirs(); }, [fetchAvoirs]);
 
     const handleSave = async (e) => {
         e.preventDefault();
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
         if (selectedAvoir) {
-            await axios.put(`http://localhost:5000/api/avoirs/${selectedAvoir.id_avoir}`, {
+            await axios.put(`${apiUrl}/api/avoirs/${selectedAvoir.id_avoir}`, {
                 nom: form.nom,
                 type: form.type,
                 description: form.description,
@@ -27,7 +29,7 @@ const Avoir = () => {
                 date: form.date
             });
         } else {
-            await axios.post('http://localhost:5000/api/avoirs', {
+            await axios.post(`${apiUrl}/api/avoirs`, {
                 id_menage: user.id_menage,
                 nom: form.nom,
                 type: form.type,
@@ -43,7 +45,8 @@ const Avoir = () => {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:5000/api/avoirs/${id}`);
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        await axios.delete(`${apiUrl}/api/avoirs/${id}`);
         if (selectedAvoir?.id_avoir === id) {
             setSelectedAvoir(null);
             setForm({ nom: '', type: '', description: '', valeur: 0, date: '' });

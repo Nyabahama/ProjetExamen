@@ -9,7 +9,8 @@ const Revenues = () => {
     useEffect(() => {
         const fetchRevenues = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/revenus/menage/${user.id_menage}`);
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+                const res = await axios.get(`${apiUrl}/api/revenus/menage/${user.id_menage}`);
                 setRevenues(res.data[0]); 
             } catch (err) {
                 console.error("Erreur lors de la récupération des revenus", err);

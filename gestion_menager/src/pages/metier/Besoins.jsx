@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,18 +8,20 @@ const Besoins = () => {
     const [selectedBesoin, setSelectedBesoin] = useState(null);
     const [form, setForm] = useState({ nom: '', description: '', categorie: '', montant: 0, date: '' });
 
-    const fetchBesoins = async () => {
+    const fetchBesoins = useCallback(async () => {
         if (!user) return;
-        const res = await axios.get(`http://localhost:5000/api/besoins/menage/${user.id_menage}`);
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        const res = await axios.get(`${apiUrl}/api/besoins/menage/${user.id_menage}`);
         setBesoins(res.data[0] || []);
-    };
+    }, [user]);
 
-    useEffect(() => { fetchBesoins(); }, [user]);
+    useEffect(() => { fetchBesoins(); }, [fetchBesoins]);
 
     const handleSave = async (e) => {
         e.preventDefault();
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
         if (selectedBesoin) {
-            await axios.put(`http://localhost:5000/api/besoins/${selectedBesoin.id_besoin}`, {
+            await axios.put(`${apiUrl}/api/besoins/${selectedBesoin.id_besoin}`, {
                 nom: form.nom,
                 description: form.description,
                 categorie: form.categorie,
@@ -27,7 +29,7 @@ const Besoins = () => {
                 date: form.date
             });
         } else {
-            await axios.post('http://localhost:5000/api/besoins', {
+            await axios.post(`${apiUrl}/api/besoins`, {
                 id_personne: user.id_personne,
                 nom: form.nom,
                 description: form.description,
@@ -42,7 +44,8 @@ const Besoins = () => {
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`http://localhost:5000/api/besoins/${id}`);
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        await axios.delete(`${apiUrl}/api/besoins/${id}`);
         if (selectedBesoin?.id_besoin === id) {
             setSelectedBesoin(null);
             setForm({ nom: '', description: '', categorie: '', montant: 0, date: '' });
