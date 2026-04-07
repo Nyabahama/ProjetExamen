@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
     const [nom, setNom] = useState('');
@@ -17,12 +19,13 @@ const Login = () => {
             if (res.data.user) {
                 login(res.data.user);
                 navigate('/');
+                toast.success(`Bienvenue ${res.data.user.prenom} !`);
             } else {
-                alert('Informations incorrectes');
+                toast.error('Informations incorrectes');
             }
         } catch (error) {
-            console.error("Erreur de connexion", error);
-            alert('Erreur lors de la connexion');
+            const msg = error.response?.data?.error || "Impossible de joindre le serveur. Vérifiez votre connexion.";
+            toast.error(msg);
         }
     };
 
