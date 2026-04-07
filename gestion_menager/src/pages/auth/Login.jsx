@@ -12,7 +12,8 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', { nom, nomFamille });
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const res = await axios.post(`${apiUrl}/api/auth/login`, { nom, nomFamille });
             if (res.data.user) {
                 login(res.data.user);
                 navigate('/');
