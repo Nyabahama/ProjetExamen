@@ -4,7 +4,10 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://managehouse.vercel.app', 'http://localhost:3000'], // Garder localhost pour vos tests futurs
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(express.json());
 
 // Connexion MySQL (Railway)
