@@ -10,6 +10,8 @@ import Expenses from './pages/metier/Expenses';
 import Revenues from './pages/metier/Revenues';
 import Avoir from './pages/metier/Avoir';
 import Besoins from './pages/metier/Besoins';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PrivateRoute = ({ children }) => {
     const { user } = useAuth();
@@ -35,6 +37,7 @@ function App() {
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </Router>
+            <ToastContainer position="top-right" autoClose={3000} />
         </AuthProvider>
     );
 }
