@@ -167,21 +167,67 @@ router.post('/besoins', async (req, res) => {
     }
 });
 
-router.put('/besoins/:id', (req, res) => {
+router.put('/besoins/:id', async (req, res) => {
     const id = Number(req.params.id);
     const { nom, description, categorie, montant, date } = req.body;
-    db.query('CALL proc_gestion_besoin(?,?,?,?,?,?,?,?)', ['UPDATE', id, null, nom, description, categorie, montant, date], (err) => {
-        if (err) return res.status(500).json({ error: "Erreur lors de la modification." });
+    try {
+        await db.query('CALL proc_gestion_besoin(?,?,?,?,?,?,?,?)', ['UPDATE', id, null, nom, description, categorie, montant, date]);
         res.json({ success: "Besoin mis à jour !" });
-    });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la modification." });
+    }
 });
 
-router.delete('/besoins/:id', (req, res) => {
+router.delete('/besoins/:id', async (req, res) => {
     const id = Number(req.params.id);
-    db.query('CALL proc_gestion_besoin(?,?,?,?,?,?,?,?)', ['DELETE', id, null, null, null, null, null, null], (err) => {
-        if (err) return res.status(500).json({ error: "Erreur lors de la suppression." });
+    try {
+        await db.query('CALL proc_gestion_besoin(?,?,?,?,?,?,?,?)', ['DELETE', id, null, null, null, null, null, null]);
         res.json({ success: "Besoin supprimé !" });
-    });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la suppression." });
+    }
+});
+
+// --- NOUVELLES ROUTES DE GESTION ---
+
+// Ajouter un membre (Personne)
+router.post('/members', async (req, res) => {
+    const { id_famille, nom, prenom, date_naissance, sexe, statut_familial, telephone, email } = req.body;
+    try {
+        const [rows] = await db.query('SELECT COALESCE(MAX(id_personne), 0) + 1 AS nextId FROM personne');
+        const id = rows[0].nextId;
+        await db.query('CALL proc_gestion_personne(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+            ['INSERT', id, id_famille, nom, prenom, date_naissance, sexe, statut_familial, telephone, email]);
+        res.json({ success: "Membre ajouté avec succès !", id });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de l'ajout du membre." });
+    }
+});
+
+// Ajouter une dépense
+router.post('/expenses', async (req, res) => {
+    const { id_personne, categorie, montant, date, mode, description } = req.body;
+    try {
+        const [rows] = await db.query('SELECT COALESCE(MAX(id_depense), 0) + 1 AS nextId FROM depense');
+        const id = rows[0].nextId;
+        await db.query('INSERT INTO depense (id_depense, id_personne, categorie_depense, montant, date_depense, mode_paiement, description) VALUES (?,?,?,?,?,?,?)', 
+            [id, id_personne, categorie, montant, date, mode, description]);
+        res.json({ success: "Dépense enregistrée !" });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de l'enregistrement de la dépense." });
+    }
+});
+
+// Ajouter un revenu
+router.post('/revenus', async (req, res) => {
+    const { id_menage, profession, montant, frequence, date } = req.body;
+    try {
+        await db.query('INSERT INTO revenus (id_menage, profession, montant_revenu, frequence, date_reception) VALUES (?,?,?,?,?)', 
+            [id_menage, profession, montant, frequence, date]);
+        res.json({ success: "Revenu ajouté !" });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de l'ajout du revenu." });
+    }
 });
 
 module.exports = router;

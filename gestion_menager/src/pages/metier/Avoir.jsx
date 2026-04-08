@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const Avoir = () => {
     const { user } = useAuth();
@@ -9,27 +10,33 @@ const Avoir = () => {
     const [form, setForm] = useState({ nom: '', type: '', description: '', valeur: 0, date: '' });
 
     const fetchAvoirs = useCallback(async () => {
-        if (!user) return;
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        const res = await axios.get(`${apiUrl}/api/avoirs/menage/${user.id_menage}`);
-        setAvoirs(res.data[0] || []);
+        try {
+            if (!user) return;
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const res = await axios.get(`${apiUrl}/api/avoirs/menage/${user.id_menage}`);
+            setAvoirs(res.data[0] || []);
+        } catch (err) {
+            toast.error("Erreur lors du chargement des avoirs");
+        }
     }, [user]);
 
     useEffect(() => { fetchAvoirs(); }, [fetchAvoirs]);
 
     const handleSave = async (e) => {
         e.preventDefault();
+        try {
         const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
         if (selectedAvoir) {
-            await axios.put(`${apiUrl}/api/avoirs/${selectedAvoir.id_avoir}`, {
+            const res = await axios.put(`${apiUrl}/api/avoirs/${selectedAvoir.id_avoir}`, {
                 nom: form.nom,
                 type: form.type,
                 description: form.description,
                 valeur: form.valeur,
                 date: form.date
             });
+            toast.success(res.data.success);
         } else {
-            await axios.post(`${apiUrl}/api/avoirs`, {
+            const res = await axios.post(`${apiUrl}/api/avoirs`, {
                 id_menage: user.id_menage,
                 nom: form.nom,
                 type: form.type,
@@ -37,21 +44,30 @@ const Avoir = () => {
                 valeur: form.valeur,
                 date: form.date
             });
+            toast.success(res.data.success);
         }
 
         setSelectedAvoir(null);
         setForm({ nom: '', type: '', description: '', valeur: 0, date: '' });
         fetchAvoirs();
+        } catch (err) {
+            toast.error("Erreur lors de l'enregistrement");
+        }
     };
 
     const handleDelete = async (id) => {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        await axios.delete(`${apiUrl}/api/avoirs/${id}`);
-        if (selectedAvoir?.id_avoir === id) {
-            setSelectedAvoir(null);
-            setForm({ nom: '', type: '', description: '', valeur: 0, date: '' });
+        try {
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const res = await axios.delete(`${apiUrl}/api/avoirs/${id}`);
+            toast.success(res.data.success);
+            if (selectedAvoir?.id_avoir === id) {
+                setSelectedAvoir(null);
+                setForm({ nom: '', type: '', description: '', valeur: 0, date: '' });
+            }
+            fetchAvoirs();
+        } catch (err) {
+            toast.error("Erreur lors de la suppression");
         }
-        fetchAvoirs();
     };
 
     const handleEdit = (item) => {

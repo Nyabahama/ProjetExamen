@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const Besoins = () => {
     const { user } = useAuth();
@@ -9,27 +10,33 @@ const Besoins = () => {
     const [form, setForm] = useState({ nom: '', description: '', categorie: '', montant: 0, date: '' });
 
     const fetchBesoins = useCallback(async () => {
-        if (!user) return;
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        const res = await axios.get(`${apiUrl}/api/besoins/menage/${user.id_menage}`);
-        setBesoins(res.data[0] || []);
+        try {
+            if (!user) return;
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const res = await axios.get(`${apiUrl}/api/besoins/menage/${user.id_menage}`);
+            setBesoins(res.data[0] || []);
+        } catch (err) {
+            toast.error("Erreur de chargement des besoins");
+        }
     }, [user]);
 
     useEffect(() => { fetchBesoins(); }, [fetchBesoins]);
 
     const handleSave = async (e) => {
         e.preventDefault();
+        try {
         const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
         if (selectedBesoin) {
-            await axios.put(`${apiUrl}/api/besoins/${selectedBesoin.id_besoin}`, {
+            const res = await axios.put(`${apiUrl}/api/besoins/${selectedBesoin.id_besoin}`, {
                 nom: form.nom,
                 description: form.description,
                 categorie: form.categorie,
                 montant: form.montant,
                 date: form.date
             });
+            toast.success(res.data.success);
         } else {
-            await axios.post(`${apiUrl}/api/besoins`, {
+            const res = await axios.post(`${apiUrl}/api/besoins`, {
                 id_personne: user.id_personne,
                 nom: form.nom,
                 description: form.description,
@@ -37,20 +44,29 @@ const Besoins = () => {
                 montant: form.montant,
                 date: form.date
             });
+            toast.success(res.data.success);
         }
         setSelectedBesoin(null);
         setForm({ nom: '', description: '', categorie: '', montant: 0, date: '' });
         fetchBesoins();
+        } catch (err) {
+            toast.error("Erreur lors de l'enregistrement");
+        }
     };
 
     const handleDelete = async (id) => {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        await axios.delete(`${apiUrl}/api/besoins/${id}`);
-        if (selectedBesoin?.id_besoin === id) {
-            setSelectedBesoin(null);
-            setForm({ nom: '', description: '', categorie: '', montant: 0, date: '' });
+        try {
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const res = await axios.delete(`${apiUrl}/api/besoins/${id}`);
+            toast.success(res.data.success);
+            if (selectedBesoin?.id_besoin === id) {
+                setSelectedBesoin(null);
+                setForm({ nom: '', description: '', categorie: '', montant: 0, date: '' });
+            }
+            fetchBesoins();
+        } catch (err) {
+            toast.error("Erreur lors de la suppression");
         }
-        fetchBesoins();
     };
 
     const handleEdit = (item) => {
